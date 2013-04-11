@@ -9,10 +9,13 @@ TPL_DIR="$LIB_DIR/templates/jsdoc"
 
 SOURCE=$1
 
-if [ ! -d $OUT_DIR ]; then
-    mkdir -p $OUT_DIR
+# clear output folder
+if [ -d $OUT_DIR ]; then
+    rm -rf $OUT_DIR
 fi
+mkdir -p $OUT_DIR
 
+# execte jsdoc
 cmd="java -jar $JAR_DIR $APP_DIR --template=$TPL_DIR --directory=$OUT_DIR $SOURCE"
 echo "RUNNING: $cmd"
 $cmd
