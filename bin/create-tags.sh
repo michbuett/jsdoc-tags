@@ -16,6 +16,12 @@ fi
 mkdir -p $OUT_DIR
 
 # execte jsdoc
-cmd="java -jar $JAR_DIR $APP_DIR --template=$TPL_DIR --directory=$OUT_DIR --recurse $SOURCE"
+cmd="java -jar $JAR_DIR $APP_DIR \
+    --template=$TPL_DIR \
+    --directory=$OUT_DIR \
+    --recurse \
+    --allfunctions \
+    --private \
+    $SOURCE"
 echo "RUNNING: $cmd"
 $cmd
