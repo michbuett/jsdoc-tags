@@ -29,7 +29,7 @@ function publish(symbolSet) {
     // create the required templates
     try {
         var tagsTemplate = new JSDOC.JsPlate(publish.conf.templatesDir + 'tags.tmpl');
-        var output = tagsTemplate.process(tagsData);
+        var output = tagsTemplate.process(tagsData, true);
 
         IO.saveFile(publish.conf.outDir, 'tags', output);
     }
