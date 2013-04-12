@@ -83,6 +83,10 @@ function createTagData(symbol) {
         return;
     }
 
+    if (symbol.alias.indexOf('#') >= 0) {
+        return;
+    }
+
     return {
         name: symbol._name || symbol.alias,
         file: symbol.srcFile,
