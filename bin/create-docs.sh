@@ -6,15 +6,20 @@ OUT_DIR=$2
 if [ ! $OUT_DIR ]; then
     OUT_DIR="$PWD"
 fi
+OUT_DIR="$OUT_DIR/docs"
+
+if [ -d $OUT_DIR ]; then
+    rm -rf $OUT_DIR
+fi
 
 BASE_DIR=$( unset CDPATH && cd "$(dirname $0)/.." && pwd)
 LIB_DIR="$BASE_DIR/support/jsdoc-toolkit"
 JAR_DIR="$LIB_DIR/jsrun.jar"
 APP_DIR="$LIB_DIR/app/run.js"
-TPL_DIR="$BASE_DIR/templates/tags"
+TPL_DIR="$LIB_DIR/templates/jsdoc"
 
 echo "### JsDoc Tag Generator ###"
-echo "[INFO] Tagfile saved to $OUT_DIR"
+echo "[INFO] Documentation will be saved to $OUT_DIR"
 echo "[INFO] Processing $SOURCE..."
 
 # execte jsdoc
