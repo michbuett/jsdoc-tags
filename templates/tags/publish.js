@@ -2,15 +2,14 @@
 function publish(symbolSet) {
 
     publish.conf = {  // trailing slash expected for dirs
-        ext:         '.html',
-        outDir:      JSDOC.opt.d || SYS.pwd + '../out/jsdoc/',
-        templatesDir: JSDOC.opt.t || SYS.pwd + '../templates/jsdoc/',
-        symbolsDir:  'symbols/',
-        srcDir:      'symbols/src/'
+        outDir: JSDOC.opt.d,
+        templatesDir: JSDOC.opt.t || SYS.pwd + '../templates/tags/'
     };
 
-    // create the folders to hold the output
-    IO.mkPath(publish.conf.outDir);
+    if (publish.conf.outDir) {
+        // create the folders to hold the output
+        IO.mkPath(publish.conf.outDir);
+    }
 
     var tagsData = [];
     var symbols = symbolSet.toArray(); // get an array version of the symbolset, useful for filtering
@@ -31,7 +30,11 @@ function publish(symbolSet) {
         var tagsTemplate = new JSDOC.JsPlate(publish.conf.templatesDir + 'tags.tmpl');
         var output = tagsTemplate.process(tagsData, true);
 
-        IO.saveFile(publish.conf.outDir, 'tags', output);
+        if (publish.conf.outDir) {
+            IO.saveFile(publish.conf.outDir, 'tags', output);
+        } else {
+            print(output);
+        }
     }
     catch (e) {
         print('ERROR: ' + e);
