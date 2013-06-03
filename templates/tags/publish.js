@@ -98,13 +98,16 @@ function createTagData(symbol) {
         name: name,
         file: symbol.srcFile,
         type: getType(symbol),
-        line: symbol.line || 0
+        line: symbol.line || 0,
+        access: getAccess(symbol)
     };
 }
 
 function getType(symbol) {
     if (symbol.isNamespace) {
         return 'v';
+    } else if (symbol.isEvent) {
+        return 'e';
     } else if (symbol.isa === 'FUNCTION') {
         return 'f';
     } else if (symbol.isa === 'CONSTRUCTOR') {
@@ -112,6 +115,10 @@ function getType(symbol) {
     } else if (symbol.memberOf) {
         return 'p';
     }
+}
+
+function getAccess(symbol) {
+    return symbol.isPrivate ? 'private' : 'public';
 }
 
 function printSymbol(s) {

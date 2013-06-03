@@ -1,6 +1,13 @@
 <for each="tag" in="data">
 {!
-    output += [tag.name, tag.file, tag.line + ';"', tag.type].join('\t');
+    output += [
+        tag.name,
+        tag.file,
+        ":" + tag.line + ';"',
+        tag.type,
+        "line:" + tag.line,
+        "access:" + tag.access
+    ].join('\t');
 !}
 </for>
 
