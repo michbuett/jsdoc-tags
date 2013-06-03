@@ -82,16 +82,20 @@ function publish(symbolSet) {
  * - properties
  */
 function createTagData(symbol) {
+    //console.log('PROCESS SYMBOL: ', symbol.alias, symbol)
+    //console.log('PROCESS SYMBOL: ', symbol.alias)
+
     if (symbol.alias === '_global_') {
         return;
     }
 
-    if (symbol.alias.indexOf('#') >= 0) {
+    if (!symbol.line) {
         return;
     }
 
+    var name = (symbol._name || symbol.alias).replace(/^.*#/, '');
     return {
-        name: symbol._name || symbol.alias,
+        name: name,
         file: symbol.srcFile,
         type: getType(symbol),
         line: symbol.line || 0
@@ -103,6 +107,8 @@ function getType(symbol) {
         return 'v';
     } else if (symbol.isa === 'FUNCTION') {
         return 'f';
+    } else if (symbol.isa === 'CONSTRUCTOR') {
+        return 'c';
     } else if (symbol.memberOf) {
         return 'p';
     }
