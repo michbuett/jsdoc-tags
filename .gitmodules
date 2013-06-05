@@ -1,3 +1,0 @@
-[submodule "support/node-jsdoc-toolkit"]
-	path = support/node-jsdoc-toolkit
-	url = https://github.com/michbuett/node-jsdoc-toolkit.git
