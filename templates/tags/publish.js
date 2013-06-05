@@ -94,6 +94,12 @@ function createTagData(symbol) {
     }
 
     var name = (symbol._name || symbol.alias).replace(/^.*#/, '');
+    var type = getType(symbol);
+
+    if (!type) {
+        return;
+    }
+
     return {
         name: name,
         file: symbol.srcFile,
@@ -111,8 +117,10 @@ function getType(symbol) {
     } else if (symbol.isa === 'FUNCTION') {
         return 'f';
     } else if (symbol.isa === 'CONSTRUCTOR') {
+        // a class
         return 'c';
     } else if (symbol.memberOf) {
+        // a property
         return 'p';
     }
 }
