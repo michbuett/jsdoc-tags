@@ -18,7 +18,7 @@ Yes, my friend, you can. Just add the following lines to your ``.vimrc``:
 ```vim
 let g:tagbar_type_javascript = {
     \ 'ctagsbin': 'node',
-    \ 'ctagsargs': 'C:\Users\michael\Workspace\jsdoc-tags -q -a',
+    \ 'ctagsargs': '/path/to/jsdoc-tags -q -a',
     \ 'kinds': [
         \ 'c:classes',
         \ 'v:variables',
