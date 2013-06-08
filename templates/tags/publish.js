@@ -105,13 +105,14 @@ function createTagData(symbol) {
         file: symbol.srcFile,
         type: getType(symbol),
         line: symbol.line || 0,
+        namespace: symbol.memberOf,
         access: getAccess(symbol)
     };
 }
 
 function getType(symbol) {
     if (symbol.isNamespace) {
-        return 'v';
+        return 'n';
     } else if (symbol.isEvent) {
         return 'e';
     } else if (symbol.isa === 'FUNCTION') {
