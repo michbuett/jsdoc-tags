@@ -82,32 +82,33 @@ function publish(symbolSet) {
  * - properties
  */
 function createTagData(symbol) {
-    //console.log('PROCESS SYMBOL: ', symbol.alias, symbol)
-    //console.log('PROCESS SYMBOL: ', symbol.alias)
+    symbol = normalize(symbol);
 
     if (symbol.alias === '_global_') {
         return;
     }
-
     if (!symbol.line) {
         return;
     }
-
-    var name = (symbol._name || symbol.alias).replace(/^.*#/, '');
-    var type = getType(symbol);
-
-    if (!type) {
+    if (!symbol.type) {
         return;
     }
 
     return {
-        name: name,
+        name: symbol.name,
         file: symbol.srcFile,
-        type: getType(symbol),
+        type: symbol.type,
         line: symbol.line || 0,
         namespace: symbol.memberOf,
-        access: getAccess(symbol)
+        access: getAccess(symbol),
+        signature: getSignature(symbol)
     };
+}
+
+function normalize(symbol) {
+    symbol.name = (symbol._name || symbol.alias).replace(/^.*#/, '');
+    symbol.type = getType(symbol);
+    return symbol;
 }
 
 function getType(symbol) {
@@ -130,11 +131,57 @@ function getAccess(symbol) {
     return symbol.isPrivate ? 'private' : 'public';
 }
 
-function printSymbol(s) {
-    print('\n### ' + s.alias + ' ###');
-    for (var key in s) {
-        if (s.hasOwnProperty(key)) {
-            print(key + ': ' + s[key]);
+function getSignature(symbol) {
+    switch (symbol.type) {
+    case 'p':
+        // it's a property
+        // -> : Type
+        var type = getTagValue(symbol, 'type');
+        return type ? ' : ' + type : '';
+
+    case 'f':
+        // it's a function
+        // -> (param1, param2, ...) : Type
+        var tags = symbol && symbol.comment && symbol.comment.tags;
+        var params = symbol._params || [];
+        var paramNames = [];
+        var returnType = 'void';
+
+        // collect the parameters
+        for (var i = 0, l = params.length; i < l; i++) {
+            var param = params[i];
+            var name = param.name;
+
+            if (param.defaultValue) {
+                name += ' = ' + param.defaultValue;
+            }
+            if (param.isOptional) {
+                name = '[' + name + ']';
+            }
+            paramNames.push(name);
         }
+
+        // determine type of return value
+        if (symbol.returns && symbol.returns.length > 0) {
+            returnType = symbol.returns[0].type;
+        }
+
+        return ' (' + paramNames.join(', ') + ') : ' + returnType;
+
+    default:
+        return '';
     }
 }
+
+function getTagValue(symbol, tagName) {
+    var tags = symbol && symbol.comment && symbol.comment.tags;
+    if (tags) {
+        for (var i = 0, l = tags.length; i < l; i++) {
+            if (tagName === tags[i].title) {
+                return tags[i].desc;
+            }
+        }
+    }
+    return '';
+}
+
