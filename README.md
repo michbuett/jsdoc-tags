@@ -10,16 +10,15 @@ Get [node.js](http://nodejs.org/download) and clone this repository - no strings
 
 Use ``node /path/to/jsdoc-tags --help`` to get usage informations.
 
+Can I use it with the brilliant tagbar plugin?
+----------------------------------------------
 
-Can I use it with the famous tagbar plugin?
--------------------------------------------
-
-Yes, my friend, it's perfectly possible. Just add the following lines to your ``.vimrc``:
+Of course, my friend, it's perfectly possible. Just add the following lines to your ``.vimrc``:
 
 ```vim
 let g:tagbar_type_javascript = {
     \ 'ctagsbin': 'node',
-    \ 'ctagsargs': '/path/to/jsdoc-tags -q -p',
+    \ 'ctagsargs': '/path/to/jsdoc-tags -aq',
     \ 'kinds': [
         \ 'c:classes',
         \ 'n:namespaces',
@@ -40,3 +39,8 @@ let g:tagbar_type_javascript = {
 \ }
 ```
 We have to make sure that all possible types are listed in the 'kinds' section or tagbar will crash.
+
+Can I still generate the API-Docs?
+----------------------------------
+
+Yes, you can. Just change the template using the ``--template`` option. There is still the original JsDoc template at ``templates/jsdoc/``.
