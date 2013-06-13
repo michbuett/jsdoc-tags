@@ -1,42 +1,60 @@
 /** Called automatically by JsDoc Toolkit. */
 function publish(symbolSet) {
+    'use strict';
 
-    publish.conf = {  // trailing slash expected for dirs
+    var conf = {  // trailing slash expected for dirs
         outDir: JSDOC.opt.d,
-        templatesDir: JSDOC.opt.t || SYS.pwd + '../templates/tags/'
+        templatesDir: JSDOC.opt.t || SYS.pwd + '../templates/tags/',
+        incremental: JSDOC.opt.i
     };
 
-    if (publish.conf.outDir) {
+    if (conf.outDir) {
         // create the folders to hold the output
-        IO.mkPath(publish.conf.outDir);
+        IO.mkPath(conf.outDir);
     }
 
     var tagsData = [];
     var symbols = symbolSet.toArray(); // get an array version of the symbolset, useful for filtering
     var i, l;
+    var files = {};
 
     for (i = 0, l = symbols.length; i < l; i++) {
         var data = createTagData(symbols[i]);
         if (data) {
             tagsData.push(data);
+
+            if (!files[data.file]) {
+                files[data.file] = true;
+            }
         }
+
     }
+
     tagsData.sort(function (a, b) {
         return a.name < b.name ? -1 : 1;
     });
 
     // create the required templates
     try {
-        var tagsTemplate = new JSDOC.JsPlate(publish.conf.templatesDir + 'tags.tmpl');
-        var output = tagsTemplate.process(tagsData, true);
+        var tagsTemplate = new JSDOC.JsPlate(conf.templatesDir + 'tags.tmpl');
+        var tagsExists = conf.outDir && conf.incremental && IO.exists(conf.outDir + '/tags');
+        var skipHeader = !conf.outDir || tagsExists;
+        var output = tagsTemplate.process({
+            header: !skipHeader,
+            tags: tagsData,
+        }, true);
 
-        if (publish.conf.outDir) {
-            IO.saveFile(publish.conf.outDir, 'tags', output);
+        if (conf.outDir) {
+            if (tagsExists) {
+                // include existing tags for incremental updates
+                var tags = IO.readFile(conf.outDir + '/tags');
+                output = clean(tags, files) + output;
+            }
+            IO.saveFile(conf.outDir, 'tags', output);
         } else {
             print(output);
         }
-    }
-    catch (e) {
+    } catch (e) {
         print('ERROR: ' + e);
         quit();
     }
@@ -82,6 +100,8 @@ function publish(symbolSet) {
  * - properties
  */
 function createTagData(symbol) {
+    'use strict';
+
     symbol = normalize(symbol);
 
     if (symbol.alias === '_global_') {
@@ -106,12 +126,16 @@ function createTagData(symbol) {
 }
 
 function normalize(symbol) {
+    'use strict';
+
     symbol.name = (symbol._name || symbol.alias).replace(/^.*#/, '');
     symbol.type = getType(symbol);
     return symbol;
 }
 
 function getType(symbol) {
+    'use strict';
+
     if (symbol.isNamespace) {
         return 'n';
     } else if (symbol.isEvent) {
@@ -128,21 +152,24 @@ function getType(symbol) {
 }
 
 function getAccess(symbol) {
+    'use strict';
+
     return symbol.isPrivate ? 'private' : 'public';
 }
 
 function getSignature(symbol) {
+    'use strict';
+
     switch (symbol.type) {
     case 'p':
         // it's a property
         // -> : Type
         var type = getTagValue(symbol, 'type');
-        return type ? ' : ' + type : '';
+        return type ? ' : ' + type.replace(/\n.*/, '') : '';
 
     case 'f':
         // it's a function
         // -> (param1, param2, ...) : Type
-        var tags = symbol && symbol.comment && symbol.comment.tags;
         var params = symbol._params || [];
         var paramNames = [];
         var returnType = 'void';
@@ -174,6 +201,8 @@ function getSignature(symbol) {
 }
 
 function getTagValue(symbol, tagName) {
+    'use strict';
+
     var tags = symbol && symbol.comment && symbol.comment.tags;
     if (tags) {
         for (var i = 0, l = tags.length; i < l; i++) {
@@ -185,3 +214,31 @@ function getTagValue(symbol, tagName) {
     return '';
 }
 
+function clean(rawTags, files) {
+    'use strict';
+
+    var result = [];
+    var tags = rawTags.split('\n');
+    var tests = [];
+
+    for (var f in files) {
+        if (files.hasOwnProperty(f)) {
+            tests.push(new RegExp(f.replace(/\./g, '\\.').replace(/\//g, '\\/')));
+        }
+    }
+
+
+    for (var i = 0, l = tags.length; i < l; i++) {
+        var tag = tags[i];
+        var match = !tag;
+
+        for (var j = 0, k = tests.length; !match && j < k; j++) {
+            match = tests[j].test(tag);
+        }
+
+        if (!match) {
+            result.push(tag);
+        }
+    }
+    return result.join('\n');
+}
