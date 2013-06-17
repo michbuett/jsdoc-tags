@@ -40,6 +40,21 @@ let g:tagbar_type_javascript = {
 ```
 We have to make sure that all possible types are listed in the 'kinds' section or tagbar will crash.
 
+Can I use it with CtrlP
+-----------------------
+
+Totally. Just enable the tag extension and fly.
+
+```vim
+let g:ctrlp_extensions = ['tag']
+```
+
+You can also tell CtrlP to start with the tags. Just add the following line to your vim configuration:
+
+```vim
+let g:ctrlp_cmd = 'CtrlPTag'
+```
+
 Can I still generate the API-Docs?
 ----------------------------------
 
