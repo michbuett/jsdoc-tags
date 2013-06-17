@@ -37,19 +37,22 @@ function publish(symbolSet) {
     // create the required templates
     try {
         var tagsTemplate = new JSDOC.JsPlate(conf.templatesDir + 'tags.tmpl');
-        var tagsExists = conf.outDir && conf.incremental && IO.exists(conf.outDir + '/tags');
-        var skipHeader = !conf.outDir || tagsExists;
+        var incremental = conf.outDir && conf.incremental && IO.exists(conf.outDir + '/tags');
+        var skipHeader = !conf.outDir || incremental;
         var output = tagsTemplate.process({
             header: !skipHeader,
             tags: tagsData,
         }, true);
 
+        if (incremental) {
+            // include existing tags for incremental updates
+            var tags = IO.readFile(conf.outDir + '/tags');
+            output = clean(tags, files) + output;
+        }
+        output = output.replace(/^\n/g, '');
+        output = output.replace(/\n\n/g, '\n');
+
         if (conf.outDir) {
-            if (tagsExists) {
-                // include existing tags for incremental updates
-                var tags = IO.readFile(conf.outDir + '/tags');
-                output = clean(tags, files) + output;
-            }
             IO.saveFile(conf.outDir, 'tags', output);
         } else {
             print(output);
