@@ -40,8 +40,8 @@ let g:tagbar_type_javascript = {
 ```
 We have to make sure that all possible types are listed in the 'kinds' section or tagbar will crash.
 
-Can I use it with CtrlP
------------------------
+Can I use it with CtrlP?
+------------------------
 
 Totally. Just enable the tag extension and fly.
 
