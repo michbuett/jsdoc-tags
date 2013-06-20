@@ -27,20 +27,14 @@ function publish(symbolSet) {
                 files[data.file] = true;
             }
         }
-
     }
-
-    tagsData.sort(function (a, b) {
-        return a.name < b.name ? -1 : 1;
-    });
 
     // create the required templates
     try {
         var tagsTemplate = new JSDOC.JsPlate(conf.templatesDir + 'tags.tmpl');
         var incremental = conf.outDir && conf.incremental && IO.exists(conf.outDir + '/tags');
-        var skipHeader = !conf.outDir || incremental;
+        var addHeader = !!conf.outDir;
         var output = tagsTemplate.process({
-            header: !skipHeader,
             tags: tagsData,
         }, true);
 
@@ -49,8 +43,24 @@ function publish(symbolSet) {
             var tags = IO.readFile(conf.outDir + '/tags');
             output = clean(tags, files) + output;
         }
-        output = output.replace(/^\n/g, '');
-        output = output.replace(/\n\n/g, '\n');
+
+        // sort tags
+        output = output.split('\n').sort().join('\n');
+
+        // replace empty lines
+        output = output.replace(/\n/gm, '<LB>');
+        output = output.replace(/<LB>(<LB>)*/g, '\n');
+
+        if (addHeader) {
+            output = [
+                '!_TAG_FILE_FORMAT      2       /extended format; --format=1 will not append ;" to lines/',
+                '!_TAG_FILE_SORTED      1       /0=unsorted, 1=sorted, 2=foldcase/',
+                '!_TAG_PROGRAM_AUTHOR   Michael Buettner        /michbuett@gmx.net/',
+                '!_TAG_PROGRAM_NAME     JsDoc-Tags      //',
+                '!_TAG_PROGRAM_URL      https://github.com/michbuett/jsdoc-tags /official site/',
+                '!_TAG_PROGRAM_VERSION  0.1     //',
+            ].join('\n') + output;
+        }
 
         if (conf.outDir) {
             IO.saveFile(conf.outDir, 'tags', output);
@@ -217,9 +227,19 @@ function getTagValue(symbol, tagName) {
     return '';
 }
 
+/**
+ * Removes header comments and the tags defined in the given files from a list
+ * of existing tags
+ * @private
+ *
+ * @param {String} rawTags The content of an existing tag file
+ * @param {Object} files The set of files to clean (the keys are the filenames)
+ * @return {String} The cleaned tags
+ */
 function clean(rawTags, files) {
     'use strict';
 
+    var commentRe = /!_TAG_/;
     var result = [];
     var tags = rawTags.split('\n');
     var tests = [];
@@ -230,10 +250,9 @@ function clean(rawTags, files) {
         }
     }
 
-
     for (var i = 0, l = tags.length; i < l; i++) {
         var tag = tags[i];
-        var match = !tag;
+        var match = !tag || commentRe.test(tag);
 
         for (var j = 0, k = tests.length; !match && j < k; j++) {
             match = tests[j].test(tag);
