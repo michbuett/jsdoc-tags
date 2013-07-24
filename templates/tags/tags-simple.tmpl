@@ -1,0 +1,12 @@
+<for each="tag" in="data.tags">
+{!
+    output += [
+        tag.name,
+        tag.file,
+        ":" + tag.line + ';"',
+        tag.type,
+        "line:" + tag.line
+    ].join('\t');
+!}
+</for>
+

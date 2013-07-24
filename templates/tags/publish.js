@@ -5,7 +5,8 @@ function publish(symbolSet) {
     var conf = {  // trailing slash expected for dirs
         outDir: JSDOC.opt.d,
         templatesDir: JSDOC.opt.t || SYS.pwd + '../templates/tags/',
-        incremental: JSDOC.opt.i
+        incremental: JSDOC.opt.i,
+        simple: JSDOC.opt.s,
     };
 
     if (conf.outDir) {
@@ -31,11 +32,13 @@ function publish(symbolSet) {
 
     // create the required templates
     try {
-        var tagsTemplate = new JSDOC.JsPlate(conf.templatesDir + 'tags.tmpl');
+        var templateFile = conf.simple ? 'tags-simple.tmpl' : 'tags-full.tmpl';
+        var tagsTemplate = new JSDOC.JsPlate(conf.templatesDir + templateFile);
         var incremental = conf.outDir && conf.incremental && IO.exists(conf.outDir + '/tags');
         var addHeader = !!conf.outDir;
         var output = tagsTemplate.process({
             tags: tagsData,
+            simple: conf.simple
         }, true);
 
         if (incremental) {
