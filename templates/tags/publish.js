@@ -56,12 +56,12 @@ function publish(symbolSet) {
 
         if (addHeader) {
             output = [
-                '!_TAG_FILE_FORMAT      2       /extended format; --format=1 will not append ;" to lines/',
-                '!_TAG_FILE_SORTED      1       /0=unsorted, 1=sorted, 2=foldcase/',
-                '!_TAG_PROGRAM_AUTHOR   Michael Buettner        /michbuett@gmx.net/',
-                '!_TAG_PROGRAM_NAME     JsDoc-Tags      //',
-                '!_TAG_PROGRAM_URL      https://github.com/michbuett/jsdoc-tags /official site/',
-                '!_TAG_PROGRAM_VERSION  0.1     //',
+                '!_TAG_FILE_FORMAT\t2\t/extended format; --format=1 will not append ;" to lines/',
+                '!_TAG_FILE_SORTED\t1\t/0=unsorted, 1=sorted, 2=foldcase/',
+                '!_TAG_PROGRAM_AUTHOR\tMichael Buettner\t/michbuett@gmx.net/',
+                '!_TAG_PROGRAM_NAME\tJsDoc-Tags\t//',
+                '!_TAG_PROGRAM_URL\thttps://github.com/michbuett/jsdoc-tags\t/official site/',
+                '!_TAG_PROGRAM_VERSION\t0.1\t//',
             ].join('\n') + output;
         }
 
