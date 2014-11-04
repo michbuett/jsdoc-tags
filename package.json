@@ -1,10 +1,18 @@
 {
     "name": "jsdoc-tags",
-    "description": "A tool to create ctags-compatible tag information based on jsdoc comments",
+    "description": "A tool to create ctags-compatible tag information for javascript files based on jsdoc comments",
     "author": "Michael Büttner <michbuett@gmx.de>",
     "repository": {
         "type": "git",
         "url": "https://github.com/michbuett/jsdoc-tags.git"
     },
-    "main": "lib/main.js"
+    "bin": "bin/jsdoc-tags",
+    "main": "bin/jsdoc-tags",
+    "version": "1.0.0",
+    "keywords": [
+        "ctags",
+        "javascript"
+    ],
+    "license": "MIT",
+    "preferGlobal": true
 }

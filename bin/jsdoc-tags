@@ -39,19 +39,19 @@ print = console.log;
 quit = process.exit;
 
 /** @namespace LOG */
-LOG = require('./log.js').create({
+LOG = require('./../log.js').create({
     verbose: !!program.verbose, // be verbose
     out: !!program.log // send log messages to a file
 });
 
 /** @namespace FilePath */
-FilePath = require('./filePath.js');
+FilePath = require('./../filePath.js');
 
 /** @namespace SYS */
-SYS = require('./sys.js').create('/', __dirname + '/../support/jsdoc-toolkit/app/');
+SYS = require('./../sys.js').create('/', __dirname + '/../support/jsdoc-toolkit/app/');
 
 /** @namespace IO */
-IO = require('./io.js').create();
+IO = require('./../io.js').create();
 
 /** @namespace JSDOC */
 JSDOC = {
